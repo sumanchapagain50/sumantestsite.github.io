@@ -1,175 +1,225 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Leaflet Map with Sidebar</title>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Leaflet CSS -->
+    <title>SAFE SHELTERS - Leaflet Map with Sidebar</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    
-    <!-- Leaflet Sidebar CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-sidebar-v2/3.1.0/leaflet-sidebar.min.css" />
-    
-    <!-- Leaflet Sidebar JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-sidebar-v2/3.1.0/leaflet-sidebar.min.js"></script>
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-minimap/dist/Control.MiniMap.min.css" />
     <style>
-        #map {
-            width: 80%;
-            height: 600px;
-            float: right;
+        body { margin: 0; font-family: Arial, sans-serif; }
+        #header {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 20px;
         }
-        .sidebar {
-            width: 20%;
-            height: 600px;
-            float: left;
+        #content {
+            position: relative;
+            display: flex;
+            height: calc(100vh - 100px);
+        }
+        #sidebar {
+            width: 250px;
+            background: #f7f7f7;
+            padding: 15px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
             overflow-y: auto;
         }
-        .sidebar-content {
-            padding: 10px;
+        #map {
+            flex: 1;
+            position: relative;
         }
-        .highlighted {
-            background-color: yellow;
+        #north-arrow {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            width: 10px;
+            height: auto;
+            z-index: 1000;
         }
-        .button-container {
-            margin: 10px 0;
+        #overview-map {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            height: 100px;
+            z-index: 1000;
         }
-        .filter-button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 5px;
-            background-color: #f1f1f1;
-            border: none;
+        .feature-item {
+            margin-bottom: 10px;
             cursor: pointer;
-            text-align: left;
+            transition: background-color 0.3s ease;
+            padding: 10px;
+            border: 1px solid #ccc;
         }
-        .filter-button.active {
-            background-color: #d1d1d1;
+        .feature-item:hover {
+            background: #eee;
+        }
+        .sidebar-title {
+            font-weight: bold;
+            text-decoration: underline;
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .selected-feature {
+            background-color: #ffc107;
+        }
+        #popup {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30%;
+            height: 30%;
+            background: white;
+            padding: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+        }
+        #popup img {
+            max-height: 100%;
+            max-width: 100%;
         }
     </style>
 </head>
 <body>
-    <div id="map"></div>
-    <div class="sidebar">
-        <div class="sidebar-content">
-            <h2>Filters</h2>
-            <div class="button-container">
-                <button id="houses-button" class="filter-button active" onclick="toggleLayer('houses')">Houses</button>
-                <button id="schools-button" class="filter-button active" onclick="toggleLayer('schools')">Schools</button>
-            </div>
-            <h2>Features</h2>
-            <ul id="feature-list"></ul>
-        </div>
+
+<div id="header">
+    <h1>SAFE SHELTERS</h1>
+</div>
+
+<div id="content">
+    <div id="sidebar">
+        <div class="sidebar-title">Locations</div>
     </div>
+    <div id="map">
+        <div id="north-arrow">
+            <img src="images/north-arrow.png" alt="North Arrow">
+        </div>
+        <div id="overview-map"></div>
+        <div id="popup"></div>
+    </div>
+</div>
 
-    <script>
-        // Initialize the map
-        var map = L.map('map').setView([28.3949, 84.1240], 7);
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-minimap/dist/Control.MiniMap.min.js"></script>
+<script>
+// Initialize the main map
+var map = L.map('map').setView([27.707171, 85.293252], 7);
 
-        // Add OpenStreetMap tile layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+// Add OpenStreetMap tile layer to main map
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
 
-        // Custom icons for houses and schools
-        var houseIcon = L.icon({
-            iconUrl: 'https://example.com/house-icon.png', // Replace with your house icon URL
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
-        });
+// Define a custom icon with a smaller size for markers
+var smallIcon = L.icon({
+    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+    iconSize: [12, 20], // Reduced size to half
+    iconAnchor: [6, 20], // Half of the icon size
+    popupAnchor: [1, -20] // Adjusted to fit the new icon size
+});
 
-        var schoolIcon = L.icon({
-            iconUrl: 'https://example.com/school-icon.png', // Replace with your school icon URL
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
-        });
+// Point features data
+var features = [
+    {
+        name: "Raised Tap",
+        location: "Dakshinpur, Geruwa",
+        coordinates: [28.51228, 81.17703],
+        photo: "images/rtap1.jpg" // Local image path
+    },
+    {
+        name: "Safe Shelter",
+        location: "Dakshinpur, Geruwa",
+        coordinates: [28.46895, 81.21129],
+        photo: "images/ss1.jpg" // Example for another image
+    }
+    // Add more features as needed
+];
 
-        // Sample data for houses and schools
-        var houses = [
-            { "name": "House 1", "lat": 27.7172, "lng": 85.3240 },
-            { "name": "House 2", "lat": 27.6702, "lng": 85.3380 }
-        ];
+// Circle for highlighting selected marker
+var selectedCircle;
 
-        var schools = [
-            { "name": "School 1", "lat": 28.2074, "lng": 83.9856 },
-            { "name": "School 2", "lat": 27.6588, "lng": 85.3246 }
-        ];
+// Function to display popup with feature details
+function displayPopup(feature, marker) {
+    var popup = document.getElementById('popup');
+    popup.innerHTML = `
+        <b>${feature.name}</b><br>
+        ${feature.location}<br>
+        Coordinates: ${feature.coordinates}<br>
+        <img src="${feature.photo}" alt="${feature.name}">
+    `;
+    popup.style.display = 'block';
 
-        var houseLayer = L.layerGroup();
-        var schoolLayer = L.layerGroup();
+    // Remove existing circle if any
+    if (selectedCircle) {
+        map.removeLayer(selectedCircle);
+    }
 
-        houses.forEach(function (house) {
-            var marker = L.marker([house.lat, house.lng], { icon: houseIcon }).bindPopup(house.name);
-            houseLayer.addLayer(marker);
-        });
+    // Add a new circle around the selected marker
+    selectedCircle = L.circle(marker.getLatLng(), {
+        radius: 5,
+        color: 'blue',
+        fillColor: 'blue',
+        fillOpacity: 0.2
+    }).addTo(map);
 
-        schools.forEach(function (school) {
-            var marker = L.marker([school.lat, school.lng], { icon: schoolIcon }).bindPopup(school.name);
-            schoolLayer.addLayer(marker);
-        });
-
-        // Add layers to the map
-        houseLayer.addTo(map);
-        schoolLayer.addTo(map);
-
-        // Populate sidebar with feature list
-        function addFeatureToList(feature, layer, type) {
-            var listItem = document.createElement('li');
-            listItem.textContent = feature.name;
-            listItem.dataset.type = type;
-            listItem.onclick = function() {
-                map.setView([feature.lat, feature.lng], 15);
-                highlightFeature(listItem);
-            };
-            document.getElementById('feature-list').appendChild(listItem);
+    // Highlight corresponding sidebar item
+    var sidebarItems = document.querySelectorAll('.feature-item');
+    sidebarItems.forEach(function(item) {
+        if (item.dataset.coordinates === feature.coordinates.toString()) {
+            item.classList.add('selected-feature');
+        } else {
+            item.classList.remove('selected-feature');
         }
+    });
+}
 
-        houses.forEach(function (house) {
-            addFeatureToList(house, houseLayer, "house");
+// Add features to main map and sidebar
+features.forEach(function(feature) {
+    // Add marker to main map with custom icon
+    var marker = L.marker(feature.coordinates, { icon: smallIcon }).addTo(map);
+    
+    // Add click event listener to marker to display details in popup box
+    marker.on('click', function() {
+        map.flyTo(feature.coordinates, 18, {
+            duration: 1.5 // Duration of the flyTo animation in seconds
         });
+        displayPopup(feature, marker);
+    });
 
-        schools.forEach(function (school) {
-            addFeatureToList(school, schoolLayer, "school");
+    // Add to sidebar
+    var sidebar = document.getElementById('sidebar');
+    var featureItem = document.createElement('div');
+    featureItem.className = 'feature-item';
+    featureItem.dataset.coordinates = feature.coordinates.toString(); // Store coordinates for matching
+    featureItem.innerHTML = `<b>${feature.name}</b><br>${feature.location}`;
+    sidebar.appendChild(featureItem);
+
+    // Center map on marker click and display popup
+    featureItem.addEventListener('click', function() {
+        map.flyTo(feature.coordinates, 18, {
+            duration: 1.5 // Duration of the flyTo animation in seconds
         });
+        displayPopup(feature, marker);
+    });
+});
 
-        // Highlight selected feature in the sidebar
-        function highlightFeature(listItem) {
-            var items = document.querySelectorAll('#feature-list li');
-            items.forEach(function(item) {
-                item.classList.remove('highlighted');
-            });
-            listItem.classList.add('highlighted');
-        }
+// Add MiniMap (Overview Map) to the main map
+var miniMap = new L.Control.MiniMap(L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}), {
+    toggleDisplay: true, // Show toggle to display/hide the mini map
+    minimized: false, // Start with the mini map minimized
+    position: 'bottomright' // Position of the mini map on the main map
+}).addTo(map);
 
-        // Toggle visibility of layers
-        function toggleLayer(layerName) {
-            if (layerName === 'houses') {
-                if (map.hasLayer(houseLayer)) {
-                    map.removeLayer(houseLayer);
-                    document.getElementById('houses-button').classList.remove('active');
-                } else {
-                    map.addLayer(houseLayer);
-                    document.getElementById('houses-button').classList.add('active');
-                }
-            } else if (layerName === 'schools') {
-                if (map.hasLayer(schoolLayer)) {
-                    map.removeLayer(schoolLayer);
-                    document.getElementById('schools-button').classList.remove('active');
-                } else {
-                    map.addLayer(schoolLayer);
-                    document.getElementById('schools-button').classList.add('active');
-                }
-            }
-        }
-    </script>
+</script>
+
 </body>
 </html>
