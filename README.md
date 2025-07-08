@@ -1,1 +1,2 @@
-# suman.github.io
+# RubicDRRGame
+Rubic cube based DRR game

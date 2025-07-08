@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Flood Risk Cube Game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="container">
+  <div class="sidebar-left">
+    <select id="hazard-select">
+      <option value="Flood" selected>Flood</option>
+      <option value="Heatwave">Heatwave</option>
+    </select>
+
+    <select id="gamelevel-select">
+      <option value="">Select Level</option>
+      <option value="Easy" selected>Easy</option>
+      <option value="Medium">Medium</option>
+      <option value="Hard">Hard</option>
+    </select>
+    <select id="lang-select">
+      <option value="English" selected>English</option>
+    </select>
+    <label>
+      <input type="checkbox" id="voice-toggle" /> Voice
+    </label>
+    <button id="start-btn">Start Game</button>
+    <button onclick="rotateCube('horizontal')">Rotate Horizontal</button>
+    <button onclick="rotateCube('vertical')">Rotate Vertical</button>
+    <button id="reset-btn" onclick="resetCube()">Reset</button>
+  </div>
+
+  <div class="center">
+    <div class="scene" id="scene">
+      <div class="cube" id="cube">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-right">
+    <div id="face-title">Select hazard and start the game</div>
+    <div id="description">Click on a tile to see description here.</div>
+    Note: You can place 3 tiles per dropbox.
+
+    <div class="drop-boxes">
+      <div class="drop-box" id="drop-front" data-face="front">Mitigation</div>
+      <div class="drop-box" id="drop-left" data-face="left">Preparedness</div>
+      <div class="drop-box" id="drop-top" data-face="top">Response</div>
+      <div class="drop-box" id="drop-bottom" data-face="bottom">Recovery</div>
+      <div class="drop-box" id="drop-back" data-face="back">Vulnerability</div>
+      <div class="drop-box" id="drop-right" data-face="right">Capacity</div>
+    </div>
+
+    <button id="submit-btn" disabled>Submit</button>
+    <div id="score"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
