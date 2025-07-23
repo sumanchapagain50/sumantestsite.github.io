@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Flood Risk Cube Game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Language Selection Splash Screen -->
+<div class="language-splash" id="language-splash">
+  <div class="language-splash-content">
+    <h2>Select Language</h2>
+    <button id="lang-english-btn">English</button>
+    <button id="lang-nepali-btn">Nepali / नेपाली</button>
+  </div>
+</div>
+
+<div class="container" style="display: none;">
+  <div class="sidebar-left" id="sidebar-left">
+    <div class="hamburger" id="hamburger-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <button id="fullscreen-btn">Full Screen</button>    
+    <div class="sidebar-content" id="sidebar-content">
+      <select id="hazard-select">
+        <option value="Flood" selected data-nepali="बाढी">Flood / बाढी</option>
+        <option value="Heatwave" data-nepali="तातो लहर">Heatwave / तातो लहर</option>
+      </select>
+
+      <select id="gamelevel-select">
+        <option value="" data-nepali="स्तर छनोट गर्नुहोस्">Select Level / स्तर छनोट गर्नुहोस्</option>
+        <option value="Easy" selected data-nepali="सजिलो">Easy / सजिलो</option>
+        <option value="Medium" data-nepali="मध्यम">Medium / मध्यम</option>
+        <option value="Hard" data-nepali="कठिन">Hard / कठिन</option>
+      </select>
+      <select id="lang-select">
+        <option value="English" selected data-nepali="अंग्रेजी">English / अंग्रेजी</option>
+        <option value="Nepali" data-nepali="नेपाली">Nepali / नेपाली</option>
+      </select>
+      <label>
+        <input type="checkbox" id="voice-toggle" /> <span data-nepali="आवाज">Voice / आवाज</span>
+      </label>
+      <button id="start-btn" data-nepali="खेल सुरु गर्नुहोस्">Start Game / खेल सुरु गर्नुहोस्</button>
+      <button onclick="rotateCube('horizontal')" data-nepali="तेर्सो घुमाउनुहोस्">Rotate Horizontal / तेर्सो घुमाउनुहोस्</button>
+      <button onclick="rotateCube('vertical')" data-nepali="ठाडो घुमाउनुहोस्">Rotate Vertical / ठाडो घुमाउनुहोस्</button>
+      <button id="reset-btn" onclick="resetCube()" data-nepali="रिसेट गर्नुहोस्">Reset / रिसेट गर्नुहोस्</button>
+    </div>
+  </div>
+
+  <div class="center">
+    <div class="scene" id="scene">
+      <div class="cube" id="cube">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-right">
+    <div id="face-title" data-nepali="जोखिम छनोट गर्नुहोस् र खेल सुरु गर्नुहोस्">Select hazard and start the game / जोखिम छनोट गर्नुहोस् र खेल सुरु गर्नुहोस्</div>
+    <div id="description" data-nepali="विवरण यहाँ हेर्न टाइलमा क्लिक गर्नुहोस्।">Click on a tile to see description here. / विवरण यहाँ हेर्न टाइलमा क्लिक गर्नुहोस्।</div>
+<br>
+    <span data-nepali="नोट: तपाईंले प्रत्येक ड्रपबक्समा ३ टाइलहरू राख्न सक्नुहुन्छ।">Note: You can place 3 tiles per dropbox. / नोट: तपाईंले प्रत्येक ड्रपबक्समा ३ टाइलहरू राख्न सक्नुहुन्छ।</span>
+
+    <div class="drop-boxes">
+      <div class="drop-box" id="drop-front" data-face="front" data-nepali="न्यूनीकरण">Mitigation / न्यूनीकरण</div>
+      <div class="drop-box" id="drop-left" data-face="left" data-nepali="तयारी">Preparedness / तयारी</div>
+      <div class="drop-box" id="drop-top" data-face="top" data-nepali="प्रतिक्रिया">Response / प्रतिक्रिया</div>
+      <div class="drop-box" id="drop-bottom" data-face="bottom" data-nepali="पुनर्प्राप्ति">Recovery / पुनर्प्राप्ति</div>
+      <div class="drop-box" id="drop-back" data-face="back" data-nepali="जोखिम">Vulnerability / जोखिम</div>
+      <div class="drop-box" id="drop-right" data-face="right" data-nepali="क्षमता">Capacity / क्षमता</div>
+    </div>
+
+    <button id="submit-btn" disabled data-nepali="पेश गर्नुहोस्">Submit / पेश गर्नुहोस्</button>
+    <div id="score" data-nepali=""></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
