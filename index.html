@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Game Hub</title>
+  <!-- Google Fonts: Poppins and Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Poppins:wght@700&display=swap" 
+    rel="stylesheet" 
+  />
+  <style>
+    /* Basic Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #FFDE59, #2e7d32);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #f0f0f0;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 50px 70px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(118, 75, 162, 0.7);
+      max-width: 420px;
+      width: 90%;
+    }
+
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      margin-bottom: 50px;
+      font-weight: 700;
+      font-size: 2.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .game-button {
+      background: linear-gradient(45deg, #ff416c, #ff4b2b);
+      color: white;
+      border: none;
+      padding: 20px 28px;
+      font-size: 1.4rem;
+      font-weight: 500;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.4s ease, transform 0.3s ease;
+      width: 100%;
+      user-select: none;
+      box-shadow: 0 5px 15px rgba(255, 75, 43, 0.6);
+    }
+
+    .game-button:hover {
+      background: linear-gradient(45deg, #ff4b2b, #ff416c);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(255, 75, 43, 0.85);
+    }
+
+    .game-button:focus {
+      outline: 3px solid #ff4b2b;
+      outline-offset: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Choose a Game</h1>
+    <div class="buttons">
+
+      <button class="game-button" data-link="CommunityResilience/index.html">CRMC Indicator Match - Symbols</button>
+
+      <button class="game-button" data-link="CRMC/index.html">CRMC Indicator Match - Tiles</button>
+
+      <button class="game-button" data-link="floodriskknowledge/index.html">Flood Risk Knowledge Game</button>
+    </div>
+  </div>
+
+  <script>
+    // Add click event listeners to all buttons with class 'game-button'
+    document.querySelectorAll('.game-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const link = button.getAttribute('data-link');
+        if (link) {
+          window.location.href = link;
+        }
+      });
+    });
+
+// Disable right-click
+document.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
+  alert(currentLanguage === 'Nepali' ? 'दायाँ क्लिक यो पृष्ठमा निषेध गरिएको छ।' : 'Right-click is disabled on this page.');
+});
+
+
+// Block certain key combinations
+document.addEventListener('keydown', function (e) {
+  if (
+    (e.ctrlKey && (e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U')) ||
+    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) ||
+    e.key === 'F12'
+  ) {
+    e.preventDefault();
+    alert(currentLanguage === 'Nepali' ? 'यो कार्य यो पृष्ठमा निषेध गरिएको छ।' : 'This action is blocked on this page.');
+  }
+});
+
+function openFullscreen() {
+  const elem = document.documentElement; // whole page
+
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.mozRequestFullScreen) { // Firefox
+    elem.mozRequestFullScreen();
+  } else if (elem.webkitRequestFullscreen) { // Chrome, Safari and Opera
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { // IE/Edge
+    elem.msRequestFullscreen();
+  }
+}
+
+
+  </script>
+</body>
+</html>
