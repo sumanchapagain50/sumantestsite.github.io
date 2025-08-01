@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CRMC Game</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    /* Hide game UI by default until start */
+    #main-container, #message, #restart, #sidebar, #modal, #winner-splash {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="header" style="max-width: 1100px; width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+  <h1 style="margin: 0;">Triplet Matching - Multiplayer</h1>
+  <button id="restart" aria-label="Restart Game" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #2196F3; color: white; border: none; border-radius: 5px; display: none;">
+    Restart Game
+  </button>
+</div>
+  <!-- Start Screen Modal for Player Names -->
+  <div id="start-screen" role="dialog" aria-modal="true" aria-labelledby="start-title" style="
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0,0,0,0.85);
+    display: flex; justify-content: center; align-items: center; z-index: 1100;
+  ">
+    <div style="
+      background: white; padding: 30px 40px; border-radius: 15px; width: 320px; text-align: center;
+    ">
+      <h2 id="start-title" style="color: #4CAF50; margin-bottom: 20px;">Enter Player Names</h2>
+      <label for="player1-name">Player 1 Name (optional)</label><br/>
+      <input type="text" id="player1-name" placeholder="Player 1" style="width: 90%; padding: 8px; margin-bottom: 15px;"/><br/>
+      <label for="player2-name">Player 2 Name (optional)</label><br/>
+      <input type="text" id="player2-name" placeholder="Player 2" style="width: 90%; padding: 8px; margin-bottom: 20px;"/><br/>
+      <button id="start-game-btn" style="
+        background-color: #2196F3; color: white; border: none; padding: 12px 30px; font-size: 16px; border-radius: 6px; cursor: pointer;
+        transition: background-color 0.3s ease;
+      ">Start Game</button>
+    </div>
+  </div>
+
+  <!-- Winner Splash Screen -->
+  <div id="winner-splash" role="dialog" aria-modal="true" aria-labelledby="winner-title" style="
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0,0,0,0.85);
+    display: none; justify-content: center; align-items: center; z-index: 1200;
+  ">
+    <div id="winner-content" style="
+      background: white; padding: 30px 40px; border-radius: 15px; width: 320px; text-align: center;
+    ">
+      <h2 id="winner-title" style="color: #4CAF50; margin-bottom: 20px;">Game Over!</h2>
+      <p id="winner-message" style="font-size: 18px; color: #333; margin-bottom: 20px;"></p>
+      <button id="winner-restart-btn" style="
+        background-color: #2196F3; color: white; border: none; padding: 12px 30px; font-size: 16px; border-radius: 6px; cursor: pointer;
+        transition: background-color 0.3s ease;
+      ">Play Again</button>
+    </div>
+  </div>
+
+  <!-- Player info container -->
+  <section id="player-info" aria-label="Player Information" style="margin-bottom: 15px; text-align: center;">
+    <div id="player-turn" aria-live="polite" style="font-weight: bold; font-size: 1.2em; text-align: left;">
+      Current Turn: Player 1
+    </div>
+  </section>
+
+  <main id="main-container" style="display: flex; gap: 20px; max-width: 1100px; width: 100%;">
+    <section id="game-container" role="grid" aria-label="Game Tiles" style="flex: 1;"></section>
+
+    <aside id="sidebar" aria-label="Matched Tiles" style="width: 300px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.2); padding: 15px; height: fit-content; max-height: 480px; overflow-y: auto; font-size: 14px; display: flex; flex-direction: column;">
+      
+      <!-- Score Table inside sidebar -->
+      <table id="player-scores" aria-live="polite" style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-weight: bold; font-size: 16px;">
+        <thead>
+          <tr>
+            <th style="border: 1px solid #ccc; padding: 8px; background-color: #e0f2f1;">Player</th>
+            <th style="border: 1px solid #ccc; padding: 8px; background-color: #e0f2f1;">Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="border: 1px solid #ccc; padding: 8px;">Player 1</td>
+            <td id="score-player1" style="border: 1px solid #ccc; padding: 8px;">0</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #ccc; padding: 8px;">Player 2</td>
+            <td id="score-player2" style="border: 1px solid #ccc; padding: 8px;">0</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 style="text-align: center; font-weight: 600; color: #4CAF50; margin-top: 0; margin-bottom: 10px;">Matched Tiles</h2>
+      <div id="matched-list"></div>
+    </aside>
+  </main>
+
+  <div id="message" aria-live="assertive" role="alert" style="text-align:center; margin-top: 20px; font-size: 24px; color: #333;"></div>
+
+  <div id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true">
+    <div id="modal-content" style="background-color: #fff; padding: 30px 40px; border-radius: 15px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; text-align: center; box-shadow: 0 0 15px rgba(0,0,0,0.4); position: relative;">
+      <h2 id="modal-title">Match Details</h2>
+      <div id="modal-text"></div>
+      <button id="modal-ok" aria-label="Close Match Details" style="background-color: #2196F3; color: white; border: none; padding: 12px 30px; font-size: 16px; border-radius: 6px; cursor: pointer; transition: background-color 0.3s ease; margin-top: 20px;">OK</button>
+    </div>
+  </div>
+
+  <!-- Audio elements for sounds -->
+  <audio id="correct-sound" src="correct.wav" preload="auto"></audio>
+  <audio id="wrong-sound" src="wrong.wav" preload="auto"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
